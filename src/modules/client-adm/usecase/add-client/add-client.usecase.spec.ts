@@ -1,29 +1,33 @@
 import AddClientUseCase from "./add-client.usecase";
 
 const MockRepository = () => {
-  return {
-    add: jest.fn(),
-    find: jest.fn(),
-  };
-};
+    return {
+        add: jest.fn(),
+        find: jest.fn()
+    }
+}
 
-describe("Add Client Usecase unit test", () => {
-  it("should add a client", async () => {
-    const repository = MockRepository();
-    const usecase = new AddClientUseCase(repository);
+describe("Add client unit test", () => {
 
-    const input = {
-      name: "Client 1",
-      email: "x@x.com",
-      address: "Address 1",
-    };
+    it("Should add a client", async () => {
+        const clientRepository = MockRepository();
 
-    const result = await usecase.execute(input);
+        const usecase = new AddClientUseCase(clientRepository);
 
-    expect(repository.add).toHaveBeenCalled();
-    expect(result.id).toBeDefined();
-    expect(result.name).toEqual(input.name);
-    expect(result.email).toEqual(input.email);
-    expect(result.address).toEqual(input.address);
-  });
-});
+
+        const input = {
+            id: "1",
+            name:"Eduardo",
+            email: "eduardohermesneto@gmail.com",
+            address: "Address 1"
+        }
+
+        const result = await usecase.execute(input);
+
+        expect(clientRepository.add).toHaveBeenCalled();
+        expect(result.id).toBeDefined();
+        expect(result.name).toBe("Eduardo")
+        expect(result.email).toBe("eduardohermesneto@gmail.com")
+        expect(result.address).toBe("Address 1")
+    })
+})

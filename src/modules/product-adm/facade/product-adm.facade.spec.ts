@@ -3,67 +3,65 @@ import ProductAdmFacadeFactory from "../factory/facade.factory";
 import { ProductModel } from "../repository/product.model";
 
 describe("ProductAdmFacade test", () => {
-  let sequelize: Sequelize;
 
-  beforeEach(async () => {
-    sequelize = new Sequelize({
-      dialect: "sqlite",
-      storage: ":memory:",
-      logging: false,
-      sync: { force: true },
-    });
+    let sequelize: Sequelize;
 
-    await sequelize.addModels([ProductModel]);
-    await sequelize.sync();
-  });
+    beforeEach(async () =>{
+        sequelize = new Sequelize({
+            dialect: "sqlite",
+            storage: ":memory:",
+            logging: false,
+            sync: { force: true }
+        })
 
-  afterEach(async () => {
-    await sequelize.close();
-  });
+        await sequelize.addModels([ProductModel])
+        await sequelize.sync();
+    })
 
-  it("should create a product", async () => {
-    // const productRepository = new ProductRepository();
-    // const addProductUseCase = new AddProductUseCase(productRepository);
-    // const productFacade = new ProductAdmFacade({
-    //   addUseCase: addProductUseCase,
-    //   stockUseCase: undefined,
-    // });
+    afterEach(async () => {
+        await sequelize.close();
+    })
 
-    const productFacade = ProductAdmFacadeFactory.create();
+    it("should create a product", async () => {
+        const productFacade = ProductAdmFacadeFactory.create();
 
-    const input = {
-      id: "1",
-      name: "Product 1",
-      description: "Product 1 description",
-      purchasePrice: 10,
-      stock: 10,
-    };
 
-    await productFacade.addProduct(input);
+        const input = {
+            id: "1",
+            name: "Product 1",
+            purchasePrice: 10,
+            stock: 10,
+            description: "Product 1 description"
+        }
 
-    const product = await ProductModel.findOne({ where: { id: "1" } });
-    expect(product).toBeDefined();
-    expect(product.id).toBe(input.id);
-    expect(product.name).toBe(input.name);
-    expect(product.description).toBe(input.description);
-    expect(product.purchasePrice).toBe(input.purchasePrice);
-    expect(product.stock).toBe(input.stock);
-  });
+        await productFacade.addProduct(input);
 
-  it("should check product stock", async () => {
-    const productFacade = ProductAdmFacadeFactory.create();
-    const input = {
-      id: "1",
-      name: "Product 1",
-      description: "Product 1 description",
-      purchasePrice: 10,
-      stock: 10,
-    };
-    await productFacade.addProduct(input);
+        const productFind = await ProductModel.findOne({ where: { id: input.id }});
+        
+        expect(productFind.id).toEqual(input.id);
+        expect(productFind.name).toEqual(input.name);
+        expect(productFind.description).toEqual(input.description);
+        expect(productFind.purchasePrice).toEqual(input.purchasePrice);
+        expect(productFind.stock).toEqual(input.stock);
+    })
 
-    const result = await productFacade.checkStock({ productId: "1" });
+    it("should check stock of a product", async () => {
+        const productFacade = ProductAdmFacadeFactory.create();
 
-    expect(result.productId).toBe(input.id);
-    expect(result.stock).toBe(input.stock);
-  });
-});
+
+        const input = {
+            id: "1",
+            name: "Product 1",
+            purchasePrice: 10,
+            stock: 10,
+            description: "Product 1 description"
+        }
+
+        await productFacade.addProduct(input);
+
+        const productFind = await productFacade.checkStock({ productId: input.id});
+        
+        expect(productFind.productId).toEqual(input.id);
+        expect(productFind.stock).toEqual(input.stock);
+    })
+})

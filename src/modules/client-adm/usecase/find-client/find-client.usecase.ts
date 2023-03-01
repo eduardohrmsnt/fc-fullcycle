@@ -1,26 +1,27 @@
+import Id from "../../../@shared/domain/value-object/id.value-object";
+import UseCaseInterface from "../../../@shared/usecase/use-case.interface";
+import Client from "../../domain/client.entity";
 import ClientGateway from "../../gateway/client.gateway";
-import {
-  FindClientInputDto,
-  FindClientOutputDto,
-} from "./find-client.usecase.dto";
+import { FindClientOutputDto, FindClientInputDto } from "./find-client.usecase.dto";
 
-export default class FindClientUseCase {
-  private _clientRepository: ClientGateway;
+export default class FindClientUseCase implements UseCaseInterface{
+    private _clientRepository: any;
 
-  constructor(clientRepository: ClientGateway) {
-    this._clientRepository = clientRepository;
-  }
+    constructor(clientRepository: ClientGateway) {
+        this._clientRepository = clientRepository;
+    }
+    async execute(input: FindClientInputDto): Promise<FindClientOutputDto> {
+        
+        const client = await this._clientRepository.find(input.id);
+        
+        return {
+            id: client.id.id,
+            name: client.name,
+            address: client.address,
+            email: client.email,
+            createdAt: client.createdAt,
+            updatedAt: client.updatedAt
+        }
+    }
 
-  async execute(input: FindClientInputDto): Promise<FindClientOutputDto> {
-    const client = await this._clientRepository.find(input.id);
-
-    return {
-      id: client.id.id,
-      name: client.name,
-      email: client.email,
-      address: client.address,
-      createdAt: client.createdAt,
-      updatedAt: client.updatedAt,
-    };
-  }
 }

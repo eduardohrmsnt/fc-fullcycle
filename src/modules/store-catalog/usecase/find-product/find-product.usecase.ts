@@ -1,17 +1,21 @@
 import ProductGateway from "../../gateway/product.gateway";
 import { FindProductInputDto, FindProductOutputDto } from "./find-product.dto";
 
-export default class FindProductUseCase {
-  constructor(private readonly productRepository: ProductGateway) {}
+export default class FindProductUseCase{
+    private readonly _productRepository: ProductGateway;
 
-  async execute(input: FindProductInputDto): Promise<FindProductOutputDto> {
-    const product = await this.productRepository.find(input.id);
+    constructor(productRepository: ProductGateway){
+        this._productRepository = productRepository;
+    }
 
-    return {
-      id: product.id.id,
-      name: product.name,
-      description: product.description,
-      salesPrice: product.salesPrice,
-    };
-  }
+    async execute(input: FindProductInputDto) : Promise<FindProductOutputDto>{
+        const product = await this._productRepository.find(input.productId);
+
+        return {
+            id: product.id.id,
+            name: product.name,
+            description: product.description,
+            salesPrice: product.salesPrice
+        }
+    }
 }
